@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+
+    <!-- update the version number as needed -->
+    <script src="/__/firebase/7.2.2/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script src="/__/firebase/7.2.2/firebase-auth.js"></script>
+    <script src="/__/firebase/7.2.2/firebase-database.js"></script>
+    <script src="/__/firebase/7.2.2/firebase-messaging.js"></script>
+    <script src="/__/firebase/7.2.2/firebase-storage.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script src="/__/firebase/init.js"></script>
+
+  </head>
+  <body>
+    Fact <input type="text" id="fact">
+    <input type="button" value="Insert" onclick="newFact()">
+    <ul id="listFacts">
+    </ul>
+    <script type="text/javascript">
+    	//refer to database
+    	var dbRef = firebase.database().ref();
+    	function newFact()
+    	{
+    		//get value from textbox
+    		var factValue = document.getElementById('fact').value;
+
+    		//refer to the root node
+    		var factsRef = dbRef.child('facts');
+
+    		//insert into database
+    		var newFact = factsRef.push();
+    		newFact.set({
+    			fact : factValue
+    		});
+    	}
+    	//load all the data from Firebase
+    	//everytime, database changes, it will call this function to update
+    	dbRef.child("facts").on('value',snap=>{
+    		//clear old list first
+    		document.getElementById("listFacts").innerHTML = '';
+    		//loop through all the node under facts
+    		snap.forEach(childSnap=>{
+    			var newLi = document.createElement('li');
+    			newLi.innerHTML = childSnap.child('fact').val();
+    			document.getElementById("listFacts").append(newLi);
+    		});
+    	});
+    </script>
+  </body>
+</html>
